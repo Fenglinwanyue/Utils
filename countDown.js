@@ -1,7 +1,12 @@
 /* eslint camelcase: "off" */
 class Timer {
-  $$timer = null
-  $$r_t = ''
+  constructor() {
+    this.$$timer = null
+    this.$$r_t = ''
+  }
+  clear() {
+    clearInterval(this.$$timer)
+  }
   getGmt(oriDate) {
     if (!oriDate) {
       return ''
