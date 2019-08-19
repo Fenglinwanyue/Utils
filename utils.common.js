@@ -211,3 +211,31 @@ export function instance_of(L, R) {
     L = L.__proto__;
   }
 }
+
+/**
+ * 模拟new
+ * arguments
+ * 1.每个函数都有一个arguments属性，表示函数的实参集合
+ * 2.arguments不是数组而是一个对象，但它和数组很相似，所以通常称为类数组对象
+ * 3.arguments有length属性，可以用arguments[length]显示调用
+ * [].shift.call(arguments) shift也是Array的一个实例方法，用于获取并返回数组的第一个元素
+ * 1、创建一个对象2.改变该对象的原型3.改变该对象的this指向4.判断构造函数是否返回了对象，未返回则返回该对象
+ */
+function Fun (author) {
+  this.author = author;
+  this.log = "模拟构造函数被实例化操作";
+}
+Fun.prototype.$log = function () {
+  console.log(this.author, this.log)
+}
+function mockNew() { // 第一个参数为构造函数
+  const obj = new Object();
+  const Constructor = [].shift.call(arguments) // 拿到构造函数 
+  obj.__proto__ = Constructor.prototype
+  const ret = Constructor.apply(obj, arguments)
+  return ret === 'object' ? ret : obj;
+}
+// code run: 
+let newObj = mockNew(Fun, 'cyl')
+newObj.$log()
+// end
