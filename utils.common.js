@@ -293,6 +293,7 @@ getValue.$apply(a, ['cyl', '18'])
  * mock bind
  * url https://www.jianshu.com/p/097f995178e1
  * 函数柯里化
+ * concat方法用于连接两个或多个数组。参数可以是具体的值，也可以是数组对象
  */
 Function.prototype.$$bind = function (context) {
   if (typeof this !== "function") throw new TypeError("this must be funciton")
@@ -302,32 +303,44 @@ Function.prototype.$$bind = function (context) {
   // 当 bind 返回的函数作为构造函数的时候，bind 时指定的 this 值会失效，但传入的参数依然生效
   return Fbind = function () {
     let self = this instanceof Fbind ? _this : ctx;
-    return _this.apply(self,args.concat(...arguments))
+    return _this.apply(self, args.concat(...arguments))
   }
   // Fbind.prototype = this.prototype; // 修改返回函数的 prototype 为绑定函数的 prototype，实例就可以继承绑定函数的原型中的值
   // 将 Fbind.prototype = this.prototype，会导致修改 Fbind.prototype 的时候，也会直接修改绑定函数的 prototype。这个时候，我们可以通过一个空函数来进行中转（ js 高程中称为原型式继承）
-  let F = function (){}
+  let F = function () { }
   F.prototype = this.prototype
-  Fbind.prototype = new F() 
+  Fbind.prototype = new F()
   return Fbind
 }
 
- // 测试一下 
- var value = 2;
+// 测试一下 
+var value = 2;
 
- var foo = {
-     value: 1
- };
+var foo = {
+  value: 1
+};
 
- function bar(name, age) {
-     this.habit = 'shopping';
-     console.log(this.value); // undefined
-     console.log(name, age);
- }
+function bar(name, age) {
+  this.habit = 'shopping';
+  console.log(this.value); // undefined
+  console.log(name, age);
+}
 
- bar.prototype.friend = 'jianshu';
+bar.prototype.friend = 'jianshu';
 
- var bindFoo = bar.$$bind(foo, 'cyl');
- var obj = new bindFoo('18');
- console.log(obj.habit);
- console.log(obj.friend);
+var bindFoo = bar.$$bind(foo, 'cyl');
+var obj = new bindFoo('18');
+console.log(obj.habit);
+console.log(obj.friend);
+
+/**
+ * mock Object.create()
+ * Object.create() ：创建一个新对象，使用现有的对象来提供新创建的对象的__proto__
+ * 使用Object.create()是将对象继承到__proto__属性上
+ */
+
+export function objCreate(oriObj) {
+  let f = function () { }
+  f.prototype = oriObj
+  return new f()
+}
