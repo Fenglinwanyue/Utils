@@ -221,7 +221,7 @@ export function instance_of(L, R) {
  * [].shift.call(arguments) shift也是Array的一个实例方法，用于获取并返回数组的第一个元素
  * 1、创建一个对象2.改变该对象的原型3.改变该对象的this指向4.判断构造函数是否返回了对象，未返回则返回该对象
  */
-function Fun (author) {
+function Fun(author) {
   this.author = author;
   this.log = "模拟构造函数被实例化操作";
 }
@@ -239,3 +239,95 @@ function mockNew() { // 第一个参数为构造函数
 let newObj = mockNew(Fun, 'cyl')
 newObj.$log()
 // end
+
+/**
+ * mock call
+ * url https://www.jianshu.com/p/097f995178e1
+ */
+Function.prototype.$call = function (context) {
+  if (typeof this !== "function") {
+    throw new TypeError("this must be function")
+  }
+  let ctx = context || window;
+  let args = [...arguments].slice(1);
+  ctx.$$fn = this;
+  let result = ctx.$$fn(...args);
+  delete (ctx.$$fn);
+  return result;
+}
+
+/**
+ * mock apply
+ * url https://www.jianshu.com/p/097f995178e1
+ */
+Function.prototype.$apply = function (context) {
+  if (typeof this !== "function") {
+    throw new TypeError("this must be function")
+  }
+  let ctx = context || window;
+  ctx.$$fn = this;
+  let result;
+  if (arguments[1]) {
+    console.log('...arguments[1] :', ...arguments[1])
+    result = ctx.$$fn([...arguments[1]])
+  } else {
+    result = ctx.$$fn()
+  }
+  delete (ctx.$$fn);
+  return result;
+}
+
+// 测试一下
+let a = {
+  value: 1
+}
+function getValue(arr) {
+  console.log('test arguments:', arr, 'log value:', this.value)
+  return {
+  }
+}
+// getValue.$apply(a, 'cyl', '18') test call
+getValue.$apply(a, ['cyl', '18'])
+
+/**
+ * mock bind
+ * url https://www.jianshu.com/p/097f995178e1
+ * 函数柯里化
+ */
+Function.prototype.$$bind = function (context) {
+  if (typeof this !== "function") throw new TypeError("this must be funciton")
+  let ctx = context || window;
+  let _this = this;
+  let args = [...arguments].slice(1)
+  // 当 bind 返回的函数作为构造函数的时候，bind 时指定的 this 值会失效，但传入的参数依然生效
+  return Fbind = function () {
+    let self = this instanceof Fbind ? _this : ctx;
+    return _this.apply(self,args.concat(...arguments))
+  }
+  // Fbind.prototype = this.prototype; // 修改返回函数的 prototype 为绑定函数的 prototype，实例就可以继承绑定函数的原型中的值
+  // 将 Fbind.prototype = this.prototype，会导致修改 Fbind.prototype 的时候，也会直接修改绑定函数的 prototype。这个时候，我们可以通过一个空函数来进行中转（ js 高程中称为原型式继承）
+  let F = function (){}
+  F.prototype = this.prototype
+  Fbind.prototype = new F() 
+  return Fbind
+}
+
+ // 测试一下 
+ var value = 2;
+
+ var foo = {
+     value: 1
+ };
+
+ function bar(name, age) {
+     this.habit = 'shopping';
+     console.log(this.value); // undefined
+     console.log(name, age);
+ }
+
+ bar.prototype.friend = 'jianshu';
+
+ var bindFoo = bar.$$bind(foo, 'cyl');
+ var obj = new bindFoo('18');
+ console.log(obj.habit);
+ console.log(obj.friend);
