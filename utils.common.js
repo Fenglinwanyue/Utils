@@ -84,7 +84,7 @@ export const clone = (parent) => {
   const _clone = (parent) => {
     if (parent === null) return null;
     if (typeof parent !== 'object') return parent;
-    let child,proto
+    let child, proto
 
     // 数组 正则 Date 单独处理->判断类型
     if (isType(parent, "Array")) {
@@ -93,9 +93,9 @@ export const clone = (parent) => {
     } else if (isType(parent, "RegExp")) {
       child = new RegExp(parent.souce, getRegExp(parent))
       if (parent.lastIndex) child.lastIndex = parent.lastIndex
-    }else if (isType(parent,"Date")){
+    } else if (isType(parent, "Date")) {
       child = new Date(parent.getTime())
-    }else{
+    } else {
       // 处理对象原型
       proto = Object.getPrototypeOf(parent)
       // 利用Object.create切断原型链
@@ -118,3 +118,83 @@ export const clone = (parent) => {
   }
   return _clone(parent)
 }
+
+console.log('clone: ', clone({ a: 1, b: ['111'], c: { d: "c" } }))
+// code run: clone:  { a: 1, b: Array { '0': '111' }, c: { d: 'c' } }
+
+export class EventEmitter {
+  constructor() {
+    this._events = this._events || new Map();
+    this._maxListeners = this._maxListeners || 10;
+  }
+}
+
+EventEmitter.prototype.emit = function (type, ...args) {
+  let handler;
+  handler = this._events.get(type);
+  if (Array.isArray(handler)) {
+    for (let i = 0; i < handler.length; i++) {
+      if (args.length > 0) {
+        handler[i].apply(this, args)
+      } else {
+        handler[i].call(this)
+      }
+    }
+  } else {
+    if (args.length > 0) {
+      handler.apply(this, args)
+    } else {
+      handler.call(this)
+    }
+  }
+  return true;
+}
+
+EventEmitter.prototype.addListener = function (type, fn) {
+  const handler = this._events.get(type)
+  if (!handler) {
+    this._events.set(type, fn)
+  } else if (handler && typeof handler == 'function') {
+    this._events.set(type, [handler, fn])
+  } else {
+    handler.push(fn)
+  }
+}
+
+EventEmitter.prototype.removeListener = function (type, fn) {
+  const handler = this._events.get(type)
+  if (handler && typeof handler === 'function') {
+    this._events.delete(type, fn);
+  } else {
+    let position;
+    if (Array.isArray(handler)) {
+      for (let i = 0; i < handler.length; i++) {
+        if (handler[i] === fn) {
+          position = i
+        } else {
+          position = -1
+        }
+      }
+    }
+    if (position !== -1) {
+      handler.splice(position, 1)
+      if (handler.length === 1) {
+        this._events.set(type, handler[0])
+      }
+    } else {
+      return this;
+    }
+  }
+}
+
+// code run: 
+let testEvent = new EventEmitter()
+testEvent.addListener('test',function(arg){
+  console.log('EventEmitter listener is complete:',arg)
+})
+testEvent.emit('test','test_params')
+testEvent.removeListener('test',function(arg){
+  console.log('EventEmitter listener is complete:',arg)
+})
+testEvent.emit('test','test_params')
+// end
