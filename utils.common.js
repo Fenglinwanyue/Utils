@@ -189,12 +189,25 @@ EventEmitter.prototype.removeListener = function (type, fn) {
 
 // code run: 
 let testEvent = new EventEmitter()
-testEvent.addListener('test',function(arg){
-  console.log('EventEmitter listener is complete:',arg)
+testEvent.addListener('test', function (arg) {
+  console.log('EventEmitter listener is complete:', arg)
 })
-testEvent.emit('test','test_params')
-testEvent.removeListener('test',function(arg){
-  console.log('EventEmitter listener is complete:',arg)
+testEvent.emit('test', 'test_params')
+testEvent.removeListener('test', function (arg) {
+  console.log('EventEmitter listener is complete:', arg)
 })
-testEvent.emit('test','test_params')
+testEvent.emit('test', 'test_params')
 // end
+
+// 实现instanceof
+export function instance_of(L, R) {
+  let O = R.prototype;
+  L = L.__proto__;
+  while (true) {
+    if (L === null) return false
+    if (L === O) {
+      return true
+    }
+    L = L.__proto__;
+  }
+}
