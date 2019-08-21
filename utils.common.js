@@ -344,3 +344,12 @@ export function objCreate(oriObj) {
   f.prototype = oriObj
   return new f()
 }
+
+/**
+ * JSON.parse
+ */
+
+let json = '{"test": 18}'
+let obj = eval('(' + json + ')')
+console.log('JSON.parse:', obj.test)
+
