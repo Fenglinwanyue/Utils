@@ -12,7 +12,7 @@ Parent.prototype.say = function () {
 }
 
 function Child(name, parent) {
-   // 将父类的构造函数绑定在子类上
+  // 将父类的构造函数绑定在子类上
   Parent.call(this, parent)
   this.child = name;
 }
@@ -24,13 +24,13 @@ function Child(name, parent) {
 Child.prototype = Object.create(Parent.prototype) // 将子类原型设置为父类的副本
 Child.prototype.constructor = Child // 子类的构造函数指向子类
 
-Child.prototype.say = function (){
+Child.prototype.say = function () {
   console.log(`I am extend by ${this.parent},and i am ${this.child}`)
 }
 
 let parent = new Parent('$$Parent')
 parent.say()
 
-let child = new Child("$$Child","_$$Parent")
+let child = new Child("$$Child", "_$$Parent")
 child.say()
 

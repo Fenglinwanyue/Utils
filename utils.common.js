@@ -353,3 +353,72 @@ let json = '{"test": 18}'
 let obj = eval('(' + json + ')')
 console.log('JSON.parse:', obj.test)
 
+/** 
+ * trim
+ * \s 空白字符，包含：回车，换行，制表符，tab，空格
+*/
+
+if (!String.prototype.trim) {
+  String.prototype.$trim = function () {
+    // return this.replace(/^\s+/, '').replace(/\s+$/, '')
+    return this.replace(/^\s+|\s+$/, '')
+  }
+  console.log('  trim:'.$trim(), '-trim')
+}
+
+/**
+ * 去重
+ */
+
+Array.prototype.$unique = function () {
+  let res = []
+  this.forEach((element, index) => {
+    // if(res.indexOf(element)===-1){
+    //   res.push(element)
+    // }
+    if (!res.includes(element)) {
+      res.push(element)
+    }
+  });
+  return res;
+}
+
+// console.log(typeof ['1','2','1']) // object
+
+console.log('数组去重：', Array.from(['1', '2', '1']).$unique())
+
+/**
+ * 性能最高的去重
+ */
+
+export function bestUnique(oriArr) {
+  let res = []
+  let obj = {}
+  for (const item of oriArr) {
+    if (!obj[item]) {
+      res.push(item)
+      obj[item] = 1
+    }
+  }
+  return res;
+}
+console.log('数组去重2：', bestUnique(['1', '2', '1']))
+
+/**
+ * type
+ */
+
+export function $typeof (ori){
+  return Object.prototype.toString.call(ori).replace(/^\[object\s|\]$/g, '')
+}
+console.log('type: ', $typeof({}))
+
+/**
+ * 首字母大写
+ */
+
+export function aToA (str) {
+  return str.toLowerCase().replace(/(\s+|^)[a-z]/g,Str=>Str.toUpperCase()) // 箭头函数加括号会出错
+}
+
+console.log(aToA(" afsalfj")); 
