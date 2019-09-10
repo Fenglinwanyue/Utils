@@ -408,7 +408,7 @@ console.log('数组去重2：', bestUnique(['1', '2', '1']))
  * type
  */
 
-export function $typeof (ori){
+export function $typeof(ori) {
   return Object.prototype.toString.call(ori).replace(/^\[object\s|\]$/g, '')
 }
 console.log('type: ', $typeof({}))
@@ -417,8 +417,60 @@ console.log('type: ', $typeof({}))
  * 首字母大写
  */
 
-export function aToA (str) {
-  return str.toLowerCase().replace(/(\s+|^)[a-z]/g,Str=>Str.toUpperCase()) // 箭头函数加括号会出错
+export function aToA(str) {
+  return str.toLowerCase().replace(/(\s+|^)[a-z]/g, Str => Str.toUpperCase()) // 箭头函数加{}会出错
 }
 
-console.log(aToA(" afsalfj")); 
+console.log(aToA(" afsalfj"));
+
+/**
+ * 判断设备
+ */
+
+const BrowserInfo = {
+  isIphone: Boolean(navigator.userAgent.match(/iphone|ipod/gi)),
+  isAndroid: Boolean(navigator.userAgent.match(/android/gi)),
+  isIpad: Boolean(navigator.userAgent.match(/ipad/gi)),
+  isWenXin: Boolean(navigator.userAgent.match(/MicroMessenger/gi)),
+  isAli: Boolean(navigator.userAgent.match(/AlipayClient/gi)),
+  isPhone: Boolean((/iphone|ipad|ipod|android/i).test(navigator.userAgent))
+}
+
+/**
+ * 数组降纬
+ */
+
+let _arr = [[1], [2]]
+let _resArr = Array.prototype.concat.apply([], _arr)
+console.log('降纬后:', _resArr);
+
+// 多维 当前仅支持手机端
+
+let _arr2 = [1, 2, [3], [[4]]]
+let _resArr2 = _arr2.flat(3)
+console.log('降纬后:', _resArr2);
+
+/**
+ * 数组极值
+ */
+function smallest(array) {
+  return Math.min.apply(Math, array)
+}
+
+function largest(array) {
+  return Math.max.apply(Math, array)
+}
+console.log('smallest val in array:', smallest([1, 2, 3, 1]))
+console.log('largest val in array:', largest([1, 2, 3, 1]))
+// es6
+let _array = [1, 2, 3, 1]
+console.log('max:', Math.max(..._array));
+console.log('min:', Math.min(..._array));
+
+// 判断小数是否相等
+
+function isEqu(x, y) {
+  return Math.abs(x - y) < Math.pow(2, -53)
+}
+console.log('0.1+0.2===0.3:', 0.1+0.2===0.3);
+console.log('小数:', isEqu(0.1 + 0.2, 0.3));

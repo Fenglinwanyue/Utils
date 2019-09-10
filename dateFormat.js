@@ -11,6 +11,7 @@ let format = (date, fmt) => {
     };
     let tmpFmt = fmt;
     if (/(y+)/.test(tmpFmt)) { // 处理年 替换yyyy-MM-dd hh:mm:ss -- 2019-MM-dd hh:mm:ss
+        // console.log(RegExp.$1); // RegExp.$1是RegExp的一个属性,指的是与正则表达式匹配的第一个 子匹配(以括号为标志)字符串
         tmpFmt = tmpFmt.replace(RegExp.$1, (`${year}`).substr(4 - RegExp.$1.length));
     }
     let keys = Object.keys(o); // 处理除年之外的剩余格式
@@ -25,4 +26,4 @@ let format = (date, fmt) => {
     return tmpFmt;
 };
 
-format("yyyy-MM-dd hh:mm:ss",new Date())
+console.log('date format :', format(new Date(), "yyyy-MM-dd hh:mm:ss"))
